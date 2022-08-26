@@ -16,7 +16,9 @@
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
-  "dependencies": {},
+  "dependencies": {
+    "@aws-sdk/client-rekognition": "^3.154.0"
+  },
   "devDependencies": {
     "electron": "^20.0.3"
   }

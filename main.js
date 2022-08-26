@@ -1,13 +1,19 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, globalShortcut, clipboard} = require('electron')
 const path = require('path');
+const { RekognitionClient, DetectTextCommand } = require("@aws-sdk/client-rekognition");
 const { CaptureShorcutByPlatform } = require('./capture-shortcut-by-platform');
 const { platform } = require('./detect-platform')
 const { waitImageClipboard } = require("./wait-image-clipboard");
 
 const GlobalCaptureShortcut = CaptureShorcutByPlatform[platform];
 
-console.log(GlobalCaptureShortcut, clipboard.availableFormats(), clipboard.readImage().isEmpty());
+const rekognition = new RekognitionClient({
+  credentials: {
+    accessKeyId: 'XXX',
+    secretAccessKey: 'XXX'
+  }
+});
 
 function createWindow () {
   // Create the browser window.
@@ -42,16 +48,34 @@ app.whenReady().then(() => {
     console.log(GlobalCaptureShortcut + ' was pressed');
     waitImageClipboard({
       onImageCaptured: function (imageCaptured) {
-        console.log(imageCaptured.getSize())
-        const imageCapturedSize = imageCaptured.getSize();
-        const factor = 2;
-        const resizedImage = imageCaptured.resize({
-          width: imageCapturedSize.width * factor,
-          height: imageCapturedSize.height * factor,
-        });
         const codeToRunOnRenderer = getCodeFragmentToRunOnRenderer(imageCaptured, 'preview-image')
-          + getCodeFragmentToRunOnRenderer(resizedImage, 'preview-pre-image');
         mainWindow.webContents.executeJavaScript(codeToRunOnRenderer);
+
+        const bytesString = imageCaptured.toDataURL().split("data:image/png;base64,")[1];
+        const image = atob(bytesString);
+        const length = image.length;
+        const imageBytes = new ArrayBuffer(length);
+        const ua = new Uint8Array(imageBytes);
+        for (let i = 0; i < length; i++) {
+          ua[i] = image.charCodeAt(i);
+        }
+
+        rekognition.send(new DetectTextCommand({
+          Image: {
+            Bytes: ua
+          }
+        })).then(r => {
+          const textDetections = r.TextDetections.reverse();
+          const filteredLines = textDetections.filter(textDetection => textDetection.Type === 'LINE');
+          console.log(filteredLines);
+          if (!filteredLines.length) return;
+          const capturedText = filteredLines.length > 1 ? filteredLines.reduce((str, textDetection, i) => {
+            return `${textDetection.DetectedText}\n${str}`;
+          }, '') : filteredLines[0].DetectedText;
+          clipboard.writeText(capturedText);
+        }).catch(e => {
+          console.error(e);
+        });
       }
     });
   })
@@ -84,3 +108,4 @@ app.on('will-quit', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
