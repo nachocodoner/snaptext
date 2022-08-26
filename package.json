@@ -1,10 +1,14 @@
 {
   "name": "snaptext",
+  "productName": "SnapText",
   "version": "1.0.0",
   "description": "App made with Electron to copy text from images into the operating system (macOS, Windows or Linux) clipboard",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "cleanDist": "rm -rf ./dist/",
+    "dmgMacArm64": "electron-packager . SnapText --platform=darwin --arch=arm64 --overwrite --out dist/ && electron-installer-dmg ./dist/SnapText-darwin-arm64/SnapText.app ./dist/SnapTextArm64 --overwrite",
+    "dmgMacX64": "electron-packager . SnapText --platform=darwin --arch=x64 --overwrite --out dist/ && electron-installer-dmg ./dist/SnapText-darwin-x64/SnapText.app ./dist/SnapTextX64 --overwrite"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -21,8 +25,8 @@
   },
   "contributors": [
     {
-      "name" : "Fabio Peruchi",
-      "email" : "fhperuchi@gmail.com",
+      "name": "Fabio Peruchi",
+      "email": "fhperuchi@gmail.com",
       "url": "https://github.com/fhperuchi"
     }
   ],
@@ -31,6 +35,8 @@
     "@aws-sdk/client-rekognition": "^3.154.0"
   },
   "devDependencies": {
-    "electron": "^20.0.3"
+    "electron": "^20.0.3",
+    "electron-packager": "^16.0.0",
+    "electron-installer-dmg": "^4.0.0"
   }
 }
