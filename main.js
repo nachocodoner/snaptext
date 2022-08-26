@@ -32,18 +32,25 @@ function createWindow () {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  const mainWindow = createWindow()
 
+  function getCodeFragmentToRunOnRenderer(image, elementId) {
+    return `document.getElementById('${elementId}').insertAdjacentHTML('beforeend', '<img src="${image.toDataURL()}" />');`;
+  }
+
+  const mainWindow = createWindow()
   const ret = globalShortcut.register(GlobalCaptureShortcut, () => {
-    console.log(GlobalCaptureShortcut + ' is pressed')
+    console.log(GlobalCaptureShortcut + ' was pressed');
     waitImageClipboard({
       onImageCaptured: function (imageCaptured) {
-        console.log(imageCaptured + ' image captured')
-        const codeToRunOnRenderer = `
-const _out = '<img src="${imageCaptured.toDataURL()}" />';
-const _target = document.getElementById('preview-image');
-_target.insertAdjacentHTML('beforeend', _out);
-`;
+        console.log(imageCaptured.getSize())
+        const imageCapturedSize = imageCaptured.getSize();
+        const factor = 2;
+        const resizedImage = imageCaptured.resize({
+          width: imageCapturedSize.width * factor,
+          height: imageCapturedSize.height * factor,
+        });
+        const codeToRunOnRenderer = getCodeFragmentToRunOnRenderer(imageCaptured, 'preview-image')
+          + getCodeFragmentToRunOnRenderer(resizedImage, 'preview-pre-image');
         mainWindow.webContents.executeJavaScript(codeToRunOnRenderer);
       }
     });
