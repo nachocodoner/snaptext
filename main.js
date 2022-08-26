@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, globalShortcut, clipboard} = require('electron')
+const {app, BrowserWindow, globalShortcut, clipboard, ipcMain} = require('electron')
 const path = require('path');
 const { CaptureShorcutByPlatform } = require('./capture-shortcut-by-platform');
 const { platform } = require('./detect-platform')
@@ -23,23 +23,42 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
- // mainWindow.webContents.openDevTools()
+ mainWindow.webContents.openDevTools()
+
+  return mainWindow;
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  const mainWindow = createWindow()
 
   const ret = globalShortcut.register(GlobalCaptureShortcut, () => {
     console.log(GlobalCaptureShortcut + ' is pressed')
     waitImageClipboard({
       onImageCaptured: function (imageCaptured) {
         console.log(imageCaptured + ' image captured')
+        const codeToRunOnRenderer = `
+alert(\'this is a test\')
+const _out = '<img src="${imageCaptured.toDataURL()}" crossOrigin="anonymous" />';
+const _target = document.getElementById('preview-image');
+_target.insertAdjacentHTML('beforeend', _out);
+`;
+        console.log(codeToRunOnRenderer);
+        mainWindow.webContents.executeJavaScript(codeToRunOnRenderer)
+        // event.sender.send('actionReply', result);
+        // const _out = '<img src="' + imageCaptured.toDataURL() + '" />';
+        //render/display
+        // const _target = document.getElementById('preview-image');
+        // _target.insertAdjacentHTML('beforeend', _out);
       }
     });
   })
+
+  ipc.on('invokeAction', function(event, data){
+    var result = processData(data);
+  });
 
   if (!ret) {
     console.log('registration failed')
