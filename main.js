@@ -1,12 +1,13 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, globalShortcut} = require('electron')
+const {app, BrowserWindow, globalShortcut, clipboard} = require('electron')
 const path = require('path');
 const { CaptureShorcutByPlatform } = require('./capture-shortcut-by-platform');
 const { platform } = require('./detect-platform')
+const { waitImageClipboard } = require("./wait-image-clipboard");
 
 const GlobalCaptureShortcut = CaptureShorcutByPlatform[platform];
 
-console.log(GlobalCaptureShortcut);
+console.log(GlobalCaptureShortcut, clipboard.availableFormats(), clipboard.readImage().isEmpty());
 
 function createWindow () {
   // Create the browser window.
@@ -33,6 +34,11 @@ app.whenReady().then(() => {
 
   const ret = globalShortcut.register(GlobalCaptureShortcut, () => {
     console.log(GlobalCaptureShortcut + ' is pressed')
+    waitImageClipboard({
+      onImageCaptured: function (imageCaptured) {
+        console.log(imageCaptured + ' image captured')
+      }
+    });
   })
 
   if (!ret) {

@@ -16,25 +16,8 @@
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
-  "dependencies": {
-    "iohook": "^0.9.3"
-  },
+  "dependencies": {},
   "devDependencies": {
     "electron": "^20.0.3"
-  },
-  "iohook": {
-    "targets": [
-      "node-72",
-      "electron-85"
-    ],
-    "platforms": [
-      "win32",
-      "darwin",
-      "linux"
-    ],
-    "arches": [
-      "x64",
-      "ia32"
-    ]
   }
 }
