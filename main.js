@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, globalShortcut, clipboard, ipcMain} = require('electron')
+const {app, BrowserWindow, globalShortcut, clipboard} = require('electron')
 const path = require('path');
 const { CaptureShorcutByPlatform } = require('./capture-shortcut-by-platform');
 const { platform } = require('./detect-platform')
@@ -40,25 +40,14 @@ app.whenReady().then(() => {
       onImageCaptured: function (imageCaptured) {
         console.log(imageCaptured + ' image captured')
         const codeToRunOnRenderer = `
-alert(\'this is a test\')
-const _out = '<img src="${imageCaptured.toDataURL()}" crossOrigin="anonymous" />';
+const _out = '<img src="${imageCaptured.toDataURL()}" />';
 const _target = document.getElementById('preview-image');
 _target.insertAdjacentHTML('beforeend', _out);
 `;
-        console.log(codeToRunOnRenderer);
-        mainWindow.webContents.executeJavaScript(codeToRunOnRenderer)
-        // event.sender.send('actionReply', result);
-        // const _out = '<img src="' + imageCaptured.toDataURL() + '" />';
-        //render/display
-        // const _target = document.getElementById('preview-image');
-        // _target.insertAdjacentHTML('beforeend', _out);
+        mainWindow.webContents.executeJavaScript(codeToRunOnRenderer);
       }
     });
   })
-
-  ipc.on('invokeAction', function(event, data){
-    var result = processData(data);
-  });
 
   if (!ret) {
     console.log('registration failed')
