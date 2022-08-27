@@ -1,4 +1,4 @@
-const {clipboard} = require('electron')
+const { clipboard } = require('electron');
 
 const waitImageClipboard = function({ prevClipboard, onImageCaptured }) {
     if (!prevClipboard) {
