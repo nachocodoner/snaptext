@@ -1,8 +1,6 @@
-# electron-quick-start
+# SnapText
 
-**Clone and run for a quick way to see Electron in action.**
-
-This is a minimal Electron application based on the [Quick Start Guide](https://electronjs.org/docs/latest/tutorial/quick-start) within the Electron documentation.
+This application is based on Electron. [Quick Start Guide](https://electronjs.org/docs/latest/tutorial/quick-start) within the Electron documentation.
 
 A basic Electron application needs just these files:
 
@@ -16,11 +14,16 @@ You can learn more about each of these components within the [Quick Start Guide]
 
 To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
 
+Then app uses [AWS Rekognition service](https://docs.aws.amazon.com/rekognition/index.html), then you need to configure your AWS Credentials to use it with the command `aws configure --profile snaptext`.
+To install AWS CLI see [this documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+To run this application in development do the following:
+
 ```bash
 # Clone this repository
-git clone https://github.com/electron/electron-quick-start
+git clone https://github.com/Gywem/snaptext
 # Go into the repository
-cd electron-quick-start
+cd snaptext
 # Install dependencies
 npm install
 # Run the app
