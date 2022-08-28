@@ -8,7 +8,8 @@
     "start": "electron .",
     "cleanDist": "rm -rf ./dist/",
     "dmgMacArm64": "electron-packager . SnapText --platform=darwin --arch=arm64 --overwrite --out dist/ && electron-installer-dmg ./dist/SnapText-darwin-arm64/SnapText.app ./dist/SnapTextArm64 --overwrite",
-    "dmgMacX64": "electron-packager . SnapText --platform=darwin --arch=x64 --overwrite --out dist/ && electron-installer-dmg ./dist/SnapText-darwin-x64/SnapText.app ./dist/SnapTextX64 --overwrite"
+    "dmgMacX64": "electron-packager . SnapText --platform=darwin --arch=x64 --overwrite --out dist/ && electron-installer-dmg ./dist/SnapText-darwin-x64/SnapText.app ./dist/SnapTextX64 --overwrite",
+    "debianX64": "electron-packager . SnapText --executableName=snaptext --platform=linux --arch=x64 --overwrite --out dist/ && electron-installer-debian --src dist/SnapText-linux-x64/ --dest dist/ --arch amd64"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -37,6 +38,7 @@
   "devDependencies": {
     "electron": "^20.0.3",
     "electron-packager": "^16.0.0",
-    "electron-installer-dmg": "^4.0.0"
+    "electron-installer-dmg": "^4.0.0",
+    "electron-installer-debian": "^3.1.0"
   }
 }
